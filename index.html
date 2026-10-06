@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scrollstop</title>
+<meta name="description" content="Write one post, and Scrollstop scores it, fixes it, adapts it and schedules it for every feed. Free, private, runs in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;600&family=Public+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="src/ui/styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <h1><span>Scroll</span>stop</h1>
+      <p>Write once. Win every feed.</p>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" id="tab-studio" data-view="studio" aria-selected="true">Studio</button>
+      <button class="tab" role="tab" id="tab-hooks" data-view="hooks" aria-selected="false">Hook Lab</button>
+      <button class="tab" role="tab" id="tab-planner" data-view="planner" aria-selected="false">Planner</button>
+      <button class="tab" role="tab" id="tab-links" data-view="links" aria-selected="false">Link tagger</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- Studio -->
+  <section class="view" id="view-studio" role="tabpanel" aria-labelledby="tab-studio">
+    <div class="rail" id="rail" aria-label="Score by channel"></div>
+
+    <div class="studio">
+      <div class="pane">
+        <div class="pane-head">
+          <h2>Your draft</h2>
+          <button class="btn ghost small" id="load-example" type="button">Load example</button>
+          <button class="btn ghost small" id="clear-draft" type="button">Clear</button>
+        </div>
+        <div class="pane-body">
+          <div class="example-flag" id="example-flag" hidden><b>Example</b> A sample draft with common mistakes. Replace it with your own post.</div>
+          <label for="draft" class="eyebrow">Write or paste one post. Scrollstop adapts it for every channel.</label>
+          <textarea id="draft" spellcheck="true" placeholder="Paste your post here. Start with the line that makes people stop scrolling."></textarea>
+          <div class="draft-meta mono" id="draft-meta"></div>
+          <div class="campaign-row">
+            <div class="field">
+              <label for="campaign">Campaign name</label>
+              <input type="text" id="campaign" placeholder="e.g. spring-launch" autocomplete="off">
+            </div>
+            <p class="hint muted" style="font-size:.8rem">Every link gets tagged for its channel (utm_source=linkedin, instagram, and so on) so you can see which feed drove the clicks.</p>
+          </div>
+
+          <div class="report" id="report" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div class="pane preview">
+        <div class="pane-head">
+          <h2 id="preview-title">Preview</h2>
+          <span class="mono muted" id="preview-count"></span>
+          <button class="btn small" id="copy-all" type="button">Copy</button>
+        </div>
+        <div class="pane-body" id="preview"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hook Lab -->
+  <section class="view" id="view-hooks" role="tabpanel" aria-labelledby="tab-hooks" hidden>
+    <div class="lab">
+      <form class="pane" id="hook-form">
+        <div class="pane-head"><h2>Hook Lab</h2></div>
+        <div class="pane-body lab-form">
+          <p class="muted" style="font-size:.88rem">Fill in your topic and Scrollstop writes 40+ hooks from proven formulas, then ranks them by how well they stop the scroll.</p>
+          <div class="field"><label for="h-topic">Topic</label><input type="text" id="h-topic" placeholder="email marketing"></div>
+          <div class="field"><label for="h-audience">Audience</label><input type="text" id="h-audience" placeholder="founders"></div>
+          <div class="field"><label for="h-outcome">Outcome they want</label><input type="text" id="h-outcome" placeholder="double your open rates"><span class="hint">Start with a verb.</span></div>
+          <div class="two">
+            <div class="field"><label for="h-n">Number</label><input type="number" id="h-n" min="2" max="99" placeholder="7"></div>
+            <div class="field"><label for="h-time">Time frame</label><input type="text" id="h-time" placeholder="30 days"></div>
+          </div>
+          <button class="btn primary" type="submit">Write hooks</button>
+
+          <div style="display:grid;gap:10px;margin-top:8px">
+            <h3>Post frameworks</h3>
+            <p class="muted" style="font-size:.84rem">Start from a proven structure. It goes into your draft with your topic filled in.</p>
+            <div class="frameworks" id="frameworks"></div>
+          </div>
+        </div>
+      </form>
+
+      <div class="pane">
+        <div class="pane-head">
+          <h2 id="hooks-title">Hooks</h2>
+          <div class="filters" id="hook-filters"></div>
+        </div>
+        <ol class="hook-list" id="hook-list"></ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Planner -->
+  <section class="view" id="view-planner" role="tabpanel" aria-labelledby="tab-planner" hidden>
+    <div class="planner-grid">
+      <div class="pane">
+        <div class="pane-head"><h2>Schedule</h2></div>
+        <div class="pane-body">
+          <div class="field"><label for="p-start">Start from</label><input type="date" id="p-start"></div>
+          <div class="field">
+            <label for="p-stagger">Pacing</label>
+            <select id="p-stagger">
+              <option value="0">Each channel at its next best time</option>
+              <option value="1">One channel per day</option>
+              <option value="2">One channel every two days</option>
+            </select>
+          </div>
+          <fieldset class="field" style="border:0;padding:0;margin:0">
+            <legend style="font-weight:600;font-size:.82rem;margin-bottom:6px">Channels</legend>
+            <div class="channels" id="p-channels"></div>
+          </fieldset>
+          <p class="disclaimer">Times are benchmark windows in your local time zone. Use them as a starting point, then check your own analytics for when your audience is online.</p>
+        </div>
+      </div>
+      <div class="pane">
+        <div class="pane-head">
+          <h2>Your posting plan</h2>
+          <div class="export-bar">
+            <button class="btn small" type="button" data-export="ics">Calendar (.ics)</button>
+            <button class="btn small" type="button" data-export="csv">Spreadsheet (.csv)</button>
+            <button class="btn small" type="button" data-export="md">Brief (.md)</button>
+          </div>
+        </div>
+        <div class="pane-body">
+          <div class="scroll-x"><table id="plan-table"></table></div>
+          <div id="export-box" class="field" hidden>
+            <label for="export-output" id="export-label">Export</label>
+            <textarea id="export-output" readonly spellcheck="false"></textarea>
+            <div class="export-bar">
+              <button class="btn primary small" type="button" id="export-copy">Copy</button>
+              <button class="btn small" type="button" id="export-download">Download file</button>
+            </div>
+            <p class="hint muted" id="export-hint"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Link tagger -->
+  <section class="view" id="view-links" role="tabpanel" aria-labelledby="tab-links" hidden>
+    <div class="planner-grid">
+      <form class="pane" id="utm-form">
+        <div class="pane-head"><h2>Link tagger</h2></div>
+        <div class="pane-body">
+          <p class="muted" style="font-size:.88rem">Paste one link and get a tracking link for every channel. Analytics tools like GA4 then show which feed sent each visit.</p>
+          <div class="field"><label for="u-url">Link</label><input type="url" id="u-url" placeholder="https://yoursite.com/guide"></div>
+          <div class="field"><label for="u-campaign">Campaign</label><input type="text" id="u-campaign" placeholder="spring-launch"></div>
+          <div class="field"><label for="u-content">Content (optional)</label><input type="text" id="u-content" placeholder="hero-video"><span class="hint">Tells two versions of the same post apart.</span></div>
+          <div class="field"><label for="u-custom">Custom source (optional)</label><input type="text" id="u-custom" placeholder="partner-newsletter"></div>
+        </div>
+      </form>
+      <div class="pane">
+        <div class="pane-head"><h2>Tracking links</h2></div>
+        <div class="pane-body"><div class="scroll-x"><table id="utm-table"></table></div></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">Scrollstop runs entirely in your browser. Nothing you write leaves this page. Platform limits and benchmarks change, so treat scores as a guide and test against your own results.</div>
+</footer>
+
+<div class="toast" id="toast" role="status" hidden><span id="toast-text"></span><button type="button" id="toast-undo" hidden>Undo</button></div>
+
+<script type="module" src="src/ui/app.js"></script>
+</body>
+</html>
